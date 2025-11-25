@@ -17,8 +17,6 @@ public class OrderItem {
 
     private Integer quantite;
 
-    private BigDecimal prixUnitaire;
-
     private BigDecimal totalLigne;
 
     @ManyToOne

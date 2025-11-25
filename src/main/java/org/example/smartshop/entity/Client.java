@@ -27,8 +27,11 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private CustomerTier niveauFidelite;
 
-    private Integer totalOrders;
-    private BigDecimal totalSpent;
+    @Builder.Default
+    private Integer totalOrders = 0;
+    
+    @Builder.Default
+    private BigDecimal totalSpent = BigDecimal.ZERO;
 
     private LocalDateTime datePremiereCommande;
     private LocalDateTime dateDerniereCommande;

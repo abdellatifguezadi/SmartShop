@@ -30,7 +30,8 @@ public class Order {
 
     private String codePromo;
 
-    private BigDecimal tauxTVA;
+    @Builder.Default
+    private BigDecimal tauxTVA = new BigDecimal("20");
 
     @Enumerated(EnumType.STRING)
     private OrderStatus statut;
