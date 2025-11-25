@@ -21,8 +21,6 @@ public class Client {
 
     private String nom;
     private String email;
-    private String telephone;
-    private String adresse;
 
     @Enumerated(EnumType.STRING)
     private CustomerTier niveauFidelite;
@@ -32,9 +30,6 @@ public class Client {
     
     @Builder.Default
     private BigDecimal totalSpent = BigDecimal.ZERO;
-
-    private LocalDateTime datePremiereCommande;
-    private LocalDateTime dateDerniereCommande;
 
     @OneToOne
     @JoinColumn(name = "user_id")

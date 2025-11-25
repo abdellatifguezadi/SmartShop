@@ -18,6 +18,4 @@ public class ClientResponse {
     private CustomerTier niveauFidelite;
     private Integer totalOrders;
     private BigDecimal totalSpent;
-    private LocalDateTime datePremiereCommande;
-    private LocalDateTime dateDerniereCommande;
 }
