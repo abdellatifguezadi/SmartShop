@@ -20,6 +20,8 @@ public class Client {
     private Long id;
 
     private String nom;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
