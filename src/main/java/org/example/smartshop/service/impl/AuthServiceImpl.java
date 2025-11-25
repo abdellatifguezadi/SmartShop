@@ -9,19 +9,21 @@ import org.example.smartshop.exception.UnauthorizedException;
 import org.example.smartshop.repository.UserRepository;
 import org.example.smartshop.service.IAuthService;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements IAuthService {
     
     private final UserRepository userRepository;
-    
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
             .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
         
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new UnauthorizedException("Mot de passe incorrect");
         }
         

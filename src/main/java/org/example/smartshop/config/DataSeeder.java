@@ -8,6 +8,7 @@ import org.example.smartshop.enums.UserRole;
 import org.example.smartshop.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 
@@ -16,7 +17,8 @@ import java.math.BigDecimal;
 public class DataSeeder implements CommandLineRunner {
     
     private final UserRepository userRepository;
-    
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
@@ -24,7 +26,7 @@ public class DataSeeder implements CommandLineRunner {
             // Admin user
             User admin = User.builder()
                 .username("admin")
-                .password("admin123")
+                .password(passwordEncoder.encode("admin123"))
                 .role(UserRole.ADMIN)
                 .build();
             userRepository.save(admin);
@@ -32,7 +34,7 @@ public class DataSeeder implements CommandLineRunner {
             // Client user
             User clientUser = User.builder()
                 .username("client")
-                .password("client123")
+                .password(passwordEncoder.encode("client123"))
                 .role(UserRole.CLIENT)
                 .build();
             
