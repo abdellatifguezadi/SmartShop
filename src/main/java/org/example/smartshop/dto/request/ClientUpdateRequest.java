@@ -1,25 +1,20 @@
 package org.example.smartshop.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class ClientRequest {
+public class ClientUpdateRequest {
     
-    @NotBlank(message = "Le nom est obligatoire")
     private String nom;
     
-    @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Format email invalide")
     private String email;
-    
-    @NotBlank(message = "Le username est obligatoire")
+
     private String username;
     
-    @NotBlank(message = "Le password est obligatoire")
     private String password;
 }
