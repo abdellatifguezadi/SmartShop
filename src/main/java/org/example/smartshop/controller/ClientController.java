@@ -21,19 +21,19 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ClientResponse> create(@Valid @RequestBody ClientRequest request, HttpSession session) {
         SecurityUtils.requireAdmin(session);
-        return ResponseEntity.ok(clientService.create(request));
+        return ResponseEntity.ok(clientService.createClient(request));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> update(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest request, HttpSession session) {
         SecurityUtils.requireAdmin(session);
-        return ResponseEntity.ok(clientService.update(id, request));
+        return ResponseEntity.ok(clientService.updateClient(id, request));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id , HttpSession session){
         SecurityUtils.requireAdmin(session);
-        return ResponseEntity.ok(clientService.getById(id));
+        return ResponseEntity.ok(clientService.getClientById(id));
     }
 
     @GetMapping("/profile")
@@ -41,5 +41,12 @@ public class ClientController {
         SecurityUtils.requireClient(session);
         Long userId = SecurityUtils.getAuthenticatedUserId(session);
         return ResponseEntity.ok(clientService.getMyProfile(userId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        clientService.deleteClient(id);
+        return ResponseEntity.noContent().build();
     }
 }

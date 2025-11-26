@@ -5,8 +5,9 @@ import org.example.smartshop.dto.request.ClientUpdateRequest;
 import org.example.smartshop.dto.response.ClientResponse;
 
 public interface IClientService {
-    ClientResponse create(ClientRequest request);
-    ClientResponse update(Long id, ClientUpdateRequest request);
-    ClientResponse getById(Long id);
+    ClientResponse createClient(ClientRequest request);
+    ClientResponse updateClient(Long id, ClientUpdateRequest request);
+    ClientResponse getClientById(Long id);
     ClientResponse getMyProfile(Long userId);
+    void deleteClient(Long id);
 }

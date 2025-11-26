@@ -10,6 +10,7 @@ import org.example.smartshop.enums.UserRole;
 import org.example.smartshop.exception.BusinessException;
 import org.example.smartshop.mapper.ClientMapper;
 import org.example.smartshop.repository.ClientRepository;
+import org.example.smartshop.repository.OrderRepository;
 import org.example.smartshop.repository.UserRepository;
 import org.example.smartshop.service.IClientService;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,13 @@ public class ClientServiceImpl implements IClientService {
     
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final ClientMapper clientMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public ClientResponse create(ClientRequest request) {
+    public ClientResponse createClient(ClientRequest request) {
         if (clientRepository.existsByEmail(request.getEmail())) {
             throw new BusinessException("Email deja utilise");
         }
@@ -55,7 +57,7 @@ public class ClientServiceImpl implements IClientService {
     
     @Override
     @Transactional
-    public ClientResponse update(Long id, ClientUpdateRequest request) {
+    public ClientResponse updateClient(Long id, ClientUpdateRequest request) {
         Client client = clientRepository.findById(id)
             .orElseThrow(() -> new BusinessException("Client non trouve"));
         
@@ -79,7 +81,7 @@ public class ClientServiceImpl implements IClientService {
     }
 
     @Override
-    public ClientResponse getById(Long id) {
+    public ClientResponse getClientById(Long id) {
         Client client = clientRepository.findById(id)
             .orElseThrow(() -> new BusinessException("Client non trouve"));
         return clientMapper.toResponse(client);
@@ -91,4 +93,22 @@ public class ClientServiceImpl implements IClientService {
             .orElseThrow(() -> new BusinessException("Client non trouve"));
         return clientMapper.toResponse(client);
     }
+
+    @Override
+    public void deleteClient(Long id) {
+        Client client = clientRepository.findById(id)
+            .orElseThrow(() -> new BusinessException("Client non trouve"));
+
+        if (orderRepository.existsByClientId(id)) {
+            throw new BusinessException("Ce client a deja des commandes");
+        }
+
+        User user = client.getUser();
+        if (user != null) {
+            userRepository.delete(user);
+        }
+
+    }
+
+
 }
