@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.ProductRequest;
+import org.example.smartshop.dto.request.ProductUpdateRequest;
 import org.example.smartshop.dto.response.ProductResponse;
 import org.example.smartshop.service.IProductService;
 import org.example.smartshop.util.SecurityUtils;
@@ -24,4 +25,13 @@ public class ProductController {
         ProductResponse response = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest request, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        ProductResponse response = productService.updateProduct(id, request);
+        return ResponseEntity.ok(response);
+    }
+
 }
