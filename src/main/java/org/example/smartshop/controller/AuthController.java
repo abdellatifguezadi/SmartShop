@@ -7,6 +7,7 @@ import org.example.smartshop.dto.request.LoginRequest;
 import org.example.smartshop.dto.response.AuthResponse;
 import org.example.smartshop.enums.UserRole;
 import org.example.smartshop.service.IAuthService;
+import org.example.smartshop.util.SecurityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +21,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         AuthResponse response = authService.login(request);
-        session.setAttribute("userId", response.getUserId());
-        session.setAttribute("username", response.getUsername());
-        session.setAttribute("role", response.getRole());
+        SecurityUtils.login(session, response);
         return ResponseEntity.ok(response);
     }
     
