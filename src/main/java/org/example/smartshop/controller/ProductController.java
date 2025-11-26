@@ -62,4 +62,11 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        ProductResponse response = productService.getProductById(id);
+        return ResponseEntity.ok(response);
+    }
 }

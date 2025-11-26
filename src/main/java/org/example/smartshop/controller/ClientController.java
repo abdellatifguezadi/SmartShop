@@ -29,4 +29,10 @@ public class ClientController {
         SecurityUtils.requireAdmin(session);
         return ResponseEntity.ok(clientService.update(id, request));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id , HttpSession session){
+        SecurityUtils.requireAdmin(session);
+        return ResponseEntity.ok(clientService.getById(id));
+    }
 }

@@ -74,4 +74,14 @@ public class ProductServiceImpl implements IProductService {
         Page<Product> products = productRepository.findAll(spec, pageable);
         return products.map(productMapper::toResponse);
     }
+
+    @Override
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Produit non trouve"));
+        if (product.getDeleted()) {
+            throw new BusinessException("Ce produit est supprime");
+        }
+        return productMapper.toResponse(product);
+    }
 }
