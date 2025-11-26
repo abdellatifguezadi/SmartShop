@@ -14,4 +14,5 @@ public interface IProductService {
     void deleteProduct(Long id);
     Page<ProductResponse> getAllProducts(String nom, BigDecimal prixMin, BigDecimal prixMax,
                                          Integer stockMin, Integer stockMax, Pageable pageable);
+    ProductResponse getProductById(Long id);
 }

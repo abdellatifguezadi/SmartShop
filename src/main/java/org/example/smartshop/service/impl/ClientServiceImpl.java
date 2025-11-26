@@ -77,4 +77,11 @@ public class ClientServiceImpl implements IClientService {
         clientRepository.save(client);
         return clientMapper.toResponse(client);
     }
+
+    @Override
+    public ClientResponse getById(Long id) {
+        Client client = clientRepository.findById(id)
+            .orElseThrow(() -> new BusinessException("Client non trouve"));
+        return clientMapper.toResponse(client);
+    }
 }
