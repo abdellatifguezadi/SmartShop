@@ -7,5 +7,5 @@ import org.example.smartshop.dto.response.ProductResponse;
 public interface IProductService {
     ProductResponse createProduct(ProductRequest request);
     ProductResponse updateProduct(Long id, ProductUpdateRequest request);
+    void deleteProduct(Long id);
 }
-
