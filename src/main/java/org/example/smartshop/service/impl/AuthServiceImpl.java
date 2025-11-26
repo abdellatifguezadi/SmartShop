@@ -21,10 +21,10 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
+            .orElseThrow(() -> new ResourceNotFoundException("Mot de passe ou username incorrect"));
         
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Mot de passe incorrect");
+            throw new UnauthorizedException("Mot de passe ou username incorrect");
         }
         
         return AuthResponse.builder()

@@ -35,4 +35,11 @@ public class ClientController {
         SecurityUtils.requireAdmin(session);
         return ResponseEntity.ok(clientService.getById(id));
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ClientResponse> getMyProfile(HttpSession session) {
+        SecurityUtils.requireClient(session);
+        Long userId = SecurityUtils.getAuthenticatedUserId(session);
+        return ResponseEntity.ok(clientService.getMyProfile(userId));
+    }
 }

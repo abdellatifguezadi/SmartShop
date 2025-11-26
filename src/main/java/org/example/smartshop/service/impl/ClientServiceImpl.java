@@ -84,4 +84,11 @@ public class ClientServiceImpl implements IClientService {
             .orElseThrow(() -> new BusinessException("Client non trouve"));
         return clientMapper.toResponse(client);
     }
+
+    @Override
+    public ClientResponse getMyProfile(Long userId) {
+        Client client = clientRepository.findByUserId(userId)
+            .orElseThrow(() -> new BusinessException("Client non trouve"));
+        return clientMapper.toResponse(client);
+    }
 }
