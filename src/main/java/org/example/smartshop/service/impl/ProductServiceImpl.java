@@ -46,5 +46,18 @@ public class ProductServiceImpl implements IProductService {
 
         return productMapper.toResponse(savedProduct);
     }
-}
 
+    @Override
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Produit non trouve"));
+
+        if (product.getDeleted()) {
+            throw new BusinessException("Ce produit est deja supprime");
+        }
+
+        product.setDeleted(true);
+        productRepository.save(product);
+    }
+}
