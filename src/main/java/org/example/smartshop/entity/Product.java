@@ -23,5 +23,6 @@ public class Product {
 
     private Integer stockDisponible;
 
+    @Builder.Default
     private Boolean deleted = false;
 }

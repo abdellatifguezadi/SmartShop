@@ -6,7 +6,6 @@ import org.example.smartshop.dto.request.ClientUpdateRequest;
 import org.example.smartshop.dto.response.ClientResponse;
 import org.example.smartshop.entity.Client;
 import org.example.smartshop.entity.User;
-import org.example.smartshop.enums.CustomerTier;
 import org.example.smartshop.enums.UserRole;
 import org.example.smartshop.exception.BusinessException;
 import org.example.smartshop.mapper.ClientMapper;
@@ -32,11 +31,11 @@ public class ClientServiceImpl implements IClientService {
     @Transactional
     public ClientResponse create(ClientRequest request) {
         if (clientRepository.existsByEmail(request.getEmail())) {
-            throw new BusinessException("Email déjà utilisé");
+            throw new BusinessException("Email deja utilise");
         }
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new BusinessException("Username déjà utilisé");
+            throw new BusinessException("Username deja utilise");
         }
         
         Client client = clientMapper.toEntity(request);
@@ -58,17 +57,17 @@ public class ClientServiceImpl implements IClientService {
     @Transactional
     public ClientResponse update(Long id, ClientUpdateRequest request) {
         Client client = clientRepository.findById(id)
-            .orElseThrow(() -> new BusinessException("Client non trouvé"));
+            .orElseThrow(() -> new BusinessException("Client non trouve"));
         
         if (request.getEmail() != null && !client.getEmail().equals(request.getEmail()) && 
             clientRepository.existsByEmail(request.getEmail())) {
-            throw new BusinessException("Email déjà utilisé");
+            throw new BusinessException("Email deja utilise");
         }
         
         User user = client.getUser();
         if (request.getUsername() != null && !user.getUsername().equals(request.getUsername()) && 
             userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new BusinessException("Username déjà utilisé");
+            throw new BusinessException("Username deja utilise");
         }
         
         clientMapper.updateEntityFromDto(request, client);
