@@ -9,8 +9,14 @@ import org.example.smartshop.exception.BusinessException;
 import org.example.smartshop.mapper.ProductMapper;
 import org.example.smartshop.repository.ProductRepository;
 import org.example.smartshop.service.IProductService;
+import org.example.smartshop.specification.ProductSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -46,5 +52,26 @@ public class ProductServiceImpl implements IProductService {
 
         return productMapper.toResponse(savedProduct);
     }
-}
 
+    @Override
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Produit non trouve"));
+
+        if (product.getDeleted()) {
+            throw new BusinessException("Ce produit est deja supprime");
+        }
+
+        product.setDeleted(true);
+        productRepository.save(product);
+    }
+
+    @Override
+    public Page<ProductResponse> getAllProducts(String nom, BigDecimal prixMin, BigDecimal prixMax,
+                                                 Integer stockMin, Integer stockMax, Pageable pageable) {
+        Specification<Product> spec = ProductSpecification. withFilters(nom, prixMin, prixMax, stockMin, stockMax);
+        Page<Product> products = productRepository.findAll(spec, pageable);
+        return products.map(productMapper::toResponse);
+    }
+}

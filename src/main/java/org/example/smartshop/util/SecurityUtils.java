@@ -11,7 +11,7 @@ public class SecurityUtils {
     public static Long getAuthenticatedUserId(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            throw new UnauthorizedException("Non authentifié");
+            throw new UnauthorizedException("Non authentifie");
         }
         return userId;
     }
@@ -21,7 +21,7 @@ public class SecurityUtils {
         UserRole role = (UserRole) session.getAttribute("role");
 
         if (role != UserRole.ADMIN) {
-            throw new ForbiddenException("Accès réservé aux administrateurs");
+            throw new ForbiddenException("Acces reserve aux administrateurs");
         }
     }
 
