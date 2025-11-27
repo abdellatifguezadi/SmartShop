@@ -21,19 +21,22 @@ public class OrderController {
     private final IOrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request , HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         OrderResponse response = orderService.createOrder(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         OrderResponse response = orderService.getOrderById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+    public ResponseEntity<List<OrderResponse>> getAllOrders(HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         List<OrderResponse> responses = orderService.getAllOrders();
         return ResponseEntity.ok(responses);
     }
@@ -47,7 +50,8 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id , HttpSession session) {
+        SecurityUtils.requireAdmin(session);
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
