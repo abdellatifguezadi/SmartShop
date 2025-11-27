@@ -7,7 +7,7 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {OrderItemMapper.class, PaymentMapper.class})
 public interface OrderMapper {
-    
+
     @Mapping(source = "client.id", target = "clientId")
     @Mapping(source = "client.nom", target = "clientNom")
     OrderResponse toResponse(Order order);

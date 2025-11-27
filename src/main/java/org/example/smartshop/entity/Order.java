@@ -34,7 +34,8 @@ public class Order {
     private BigDecimal tauxTVA = new BigDecimal("20");
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus statut;
+    @Builder.Default
+    private OrderStatus statut = OrderStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
