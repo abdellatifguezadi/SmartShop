@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,15 +40,13 @@ public class OrderServiceImpl implements IOrderService {
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouve avec l'ID: " + request.getClientId()));
 
+        Order order = orderMapper.toEntity(request);
+        order.setClient(client);
+        order.setStatut(OrderStatus.PENDING);
 
-        Order order = Order.builder()
-                .client(client)
-                .dateCreation(LocalDateTime.now())
-                .statut(OrderStatus.PENDING)
-                .tauxTVA(request.getTauxTVA() != null ? request.getTauxTVA() : new BigDecimal("20"))
-                .codePromo(request.getCodePromo())
-                .build();
-
+        if (order.getTauxTVA() == null) {
+            order.setTauxTVA(new BigDecimal("20"));
+        }
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal sousTotal = BigDecimal.ZERO;
@@ -77,7 +74,6 @@ public class OrderServiceImpl implements IOrderService {
             orderItems.add(orderItem);
             sousTotal = sousTotal.add(totalLigne);
 
-            // Stock sera déduit lors de la confirmation du paiement, pas ici
         }
 
         order.setItems(orderItems);
@@ -97,7 +93,7 @@ public class OrderServiceImpl implements IOrderService {
                 throw new BusinessException("Ce code promo a deja ete utilise");
             }
 
-            BigDecimal promoDiscount = montantApresRemiseFidelite.multiply(PromoCode.getDiscountPercentage())
+            BigDecimal promoDiscount = montantApresRemiseFidelite.multiply(promoCode.getDiscountPercentage())
                     .setScale(2, RoundingMode.HALF_UP);
             montantRemise = montantRemise.add(promoDiscount);
 
