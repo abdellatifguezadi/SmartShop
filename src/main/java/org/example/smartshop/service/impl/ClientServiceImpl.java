@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.ClientRequest;
 import org.example.smartshop.dto.request.ClientUpdateRequest;
 import org.example.smartshop.dto.response.ClientResponse;
+import org.example.smartshop.dto.response.ClientStatisticsResponse;
 import org.example.smartshop.entity.Client;
 import org.example.smartshop.entity.User;
 import org.example.smartshop.enums.UserRole;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +94,28 @@ public class ClientServiceImpl implements IClientService {
         Client client = clientRepository.findByUserId(userId)
             .orElseThrow(() -> new BusinessException("Client non trouve"));
         return clientMapper.toResponse(client);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClientStatisticsResponse getMyStatistics(Long userId) {
+        Client client = clientRepository.findByUserId(userId)
+            .orElseThrow(() -> new BusinessException("Client non trouve"));
+
+        BigDecimal montantMoyen = BigDecimal.ZERO;
+        if (client.getTotalOrders() != null && client.getTotalOrders() > 0) {
+            montantMoyen = client.getTotalSpent()
+                .divide(new BigDecimal(client.getTotalOrders()), 2, RoundingMode.HALF_UP);
+        }
+
+        return ClientStatisticsResponse.builder()
+            .nom(client.getNom())
+            .email(client.getEmail())
+            .niveauFidelite(client.getNiveauFidelite())
+            .nombreCommandes(client.getTotalOrders())
+            .montantCumule(client.getTotalSpent())
+            .montantMoyenParCommande(montantMoyen)
+            .build();
     }
 
     @Override
