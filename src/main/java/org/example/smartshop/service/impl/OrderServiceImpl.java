@@ -39,7 +39,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderResponse createOrder(OrderRequest request) {
 
         Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'ID: " + request.getClientId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Client non trouve avec l'ID: " + request.getClientId()));
 
 
         Order order = Order.builder()
@@ -57,7 +57,7 @@ public class OrderServiceImpl implements IOrderService {
         //order item
         for (OrderItemRequest itemRequest : request.getItems()) {
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Produit non trouvé avec l'ID: " + itemRequest.getProductId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Produit non trouve avec l'ID: " + itemRequest.getProductId()));
 
             if (product.getStockDisponible() < itemRequest.getQuantite()) {
                 throw new BusinessException("Stock insuffisant pour le produit: " + product.getNom());
@@ -92,10 +92,10 @@ public class OrderServiceImpl implements IOrderService {
         //code promo
         if (request.getCodePromo() != null && !request.getCodePromo().isEmpty()) {
             PromoCode promoCode = promoCodeRepository.findByCode(request.getCodePromo())
-                    .orElseThrow(() -> new ResourceNotFoundException("Code promo non trouvé: " + request.getCodePromo()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Code promo non trouve: " + request.getCodePromo()));
 
             if (Boolean.TRUE.equals(promoCode.getUsed())) {
-                throw new BusinessException("Ce code promo a déjà été utilisé");
+                throw new BusinessException("Ce code promo a deja ete utilise");
             }
 
             BigDecimal promoDiscount = montantApresRemiseFidelite.multiply(PromoCode.getDiscountPercentage())
@@ -108,18 +108,21 @@ public class OrderServiceImpl implements IOrderService {
         }
 
         order.setMontantRemise(montantRemise);
-
+        
+        //montant total apres remis
         BigDecimal montantHTApresRemise = sousTotal.subtract(montantRemise)
                 .setScale(2, RoundingMode.HALF_UP);
 
         order.setMontantHTApresRemise(montantHTApresRemise);
-
+        
+        //calcule de tva
         BigDecimal montantTVA = montantHTApresRemise
                 .multiply(order.getTauxTVA())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
         order.setMontantTVA(montantTVA);
-
+        
+        //montant total
         BigDecimal totalTTC = montantHTApresRemise.add(montantTVA)
                 .setScale(2, RoundingMode.HALF_UP);
         order.setTotalTTC(totalTTC);
@@ -135,7 +138,7 @@ public class OrderServiceImpl implements IOrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + id));
         return orderMapper.toResponse(order);
     }
 
