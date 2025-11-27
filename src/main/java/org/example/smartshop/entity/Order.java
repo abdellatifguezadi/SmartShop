@@ -50,4 +50,14 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "promo_code_id")
     private PromoCode promoCode;
+
+    @PrePersist
+    protected void onCreate() {
+        if (dateCreation == null) {
+            dateCreation = LocalDateTime.now();
+        }
+        if (tauxTVA == null) {
+            tauxTVA = new BigDecimal("20");
+        }
+    }
 }

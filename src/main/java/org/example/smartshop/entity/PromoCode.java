@@ -18,11 +18,9 @@ public class PromoCode {
     @Column(unique = true)
     private String code;
 
-    private BigDecimal discountPercentage;
+    @Builder.Default
+    private BigDecimal discountPercentage = new BigDecimal("0.05");
 
     private Boolean used;
 
-    public static BigDecimal getDiscountPercentage() {
-        return new BigDecimal("0.05");
-    }
 }
