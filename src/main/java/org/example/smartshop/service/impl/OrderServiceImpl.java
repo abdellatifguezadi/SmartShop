@@ -77,8 +77,7 @@ public class OrderServiceImpl implements IOrderService {
             orderItems.add(orderItem);
             sousTotal = sousTotal.add(totalLigne);
 
-            product.setStockDisponible(product.getStockDisponible() - itemRequest.getQuantite());
-            productRepository.save(product);
+            // Stock sera déduit lors de la confirmation du paiement, pas ici
         }
 
         order.setItems(orderItems);
@@ -142,6 +141,33 @@ public class OrderServiceImpl implements IOrderService {
         return orderMapper.toResponse(order);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(orderMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + id));
+
+        if(!order.getStatut().equals(OrderStatus.PENDING)){
+            throw new BusinessException("Impossible de supprimer une commande non en attente");
+        }
+
+        if (order.getPromoCode() != null && Boolean.TRUE.equals(order.getPromoCode().getUsed())) {
+            PromoCode promoCode = order.getPromoCode();
+            promoCode.setUsed(false);
+            promoCodeRepository.save(promoCode);
+        }
+
+        orderRepository.delete(order);
+    }
 
     private BigDecimal calculateTierDiscount(CustomerTier tier, BigDecimal sousTotal) {
         BigDecimal discountPercentage = BigDecimal.ZERO;
