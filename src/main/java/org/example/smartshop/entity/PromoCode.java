@@ -3,7 +3,6 @@ package org.example.smartshop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "promo_codes")
@@ -21,9 +20,9 @@ public class PromoCode {
 
     private BigDecimal discountPercentage;
 
-    private Boolean active;
     private Boolean used;
 
-    private LocalDateTime expirationDate;
+    public static BigDecimal getDiscountPercentage() {
+        return new BigDecimal("0.05");
+    }
 }
-
