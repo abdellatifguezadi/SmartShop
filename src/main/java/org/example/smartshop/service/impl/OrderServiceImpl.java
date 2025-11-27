@@ -147,6 +147,18 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getMyOrders(Long userId) {
+        Client client = clientRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client non trouve"));
+
+        List<Order> orders = orderRepository.findByClientId(client.getId());
+        return orders.stream()
+                .map(orderMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     @Transactional
     public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)

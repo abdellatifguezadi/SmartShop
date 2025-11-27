@@ -9,5 +9,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsByClientId(Long clientId);
 
-    List<Order> id(Long id);
+    List<Order> findByClientId(Long clientId);
 }

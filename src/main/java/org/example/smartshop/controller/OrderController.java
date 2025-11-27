@@ -1,10 +1,12 @@
 package org.example.smartshop.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.OrderRequest;
 import org.example.smartshop.dto.response.OrderResponse;
 import org.example.smartshop.service.IOrderService;
+import org.example.smartshop.util.SecurityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,14 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         List<OrderResponse> responses = orderService.getAllOrders();
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/my-orders")
+    public ResponseEntity<List<OrderResponse>> getMyOrders(HttpSession session) {
+        SecurityUtils.requireClient(session);
+        Long userId = SecurityUtils.getAuthenticatedUserId(session);
+        List<OrderResponse> responses = orderService.getMyOrders(userId);
         return ResponseEntity.ok(responses);
     }
 

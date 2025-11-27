@@ -35,7 +35,7 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             HttpSession session
     ) {
-        SecurityUtils.requireAdmin(session);
+        SecurityUtils.getAuthenticatedUserId(session);
         Pageable pageable = PageRequest.of(page, size);
 
         Page<ProductResponse> products = productService.getAllProducts(nom, prixMin, prixMax, stockMin, stockMax, pageable);
