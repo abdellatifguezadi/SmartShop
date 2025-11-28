@@ -20,21 +20,19 @@ public class Client {
     private Long id;
 
     private String nom;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    private String telephone;
-    private String adresse;
 
     @Enumerated(EnumType.STRING)
-    private CustomerTier niveauFidelite;
+    @Builder.Default
+    private CustomerTier niveauFidelite = CustomerTier.BASIC;
 
     @Builder.Default
     private Integer totalOrders = 0;
     
     @Builder.Default
     private BigDecimal totalSpent = BigDecimal.ZERO;
-
-    private LocalDateTime datePremiereCommande;
-    private LocalDateTime dateDerniereCommande;
 
     @OneToOne
     @JoinColumn(name = "user_id")
