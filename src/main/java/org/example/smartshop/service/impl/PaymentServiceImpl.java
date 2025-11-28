@@ -130,11 +130,19 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
+    public List<PaymentResponse> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream()
+                .map(paymentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public List<PaymentResponse> getPaymentsByOrderId(Long orderId) {
         List<Payment> payments = paymentRepository.findByOrderId(orderId);
         return payments.stream()
                 .map(paymentMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

@@ -36,6 +36,13 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<PaymentResponse>> getAllPayments(HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        List<PaymentResponse> responses = paymentService.getAllPayments();
+        return ResponseEntity.ok(responses);
+    }
+
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByOrderId(@PathVariable Long orderId,HttpSession session) {
         SecurityUtils.requireAdmin(session);
