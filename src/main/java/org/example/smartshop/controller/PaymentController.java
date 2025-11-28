@@ -37,4 +37,10 @@ public class PaymentController {
         List<PaymentResponse> responses = paymentService.getPaymentsByOrderId(orderId);
         return ResponseEntity.ok(responses);
     }
+
+    @PutMapping("/{id}/validate")
+    public ResponseEntity<PaymentResponse> validatePayment(@PathVariable Long id){
+        PaymentResponse response = paymentService.validatePayment(id);
+        return ResponseEntity.ok(response);
+    }
 }

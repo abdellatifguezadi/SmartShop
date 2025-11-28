@@ -139,4 +139,18 @@ public class PaymentServiceImpl implements IPaymentService {
                 .map(paymentMapper::toResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public PaymentResponse validatePayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new ResourceNotFoundException("Paiement non trouve avec l'ID: " + paymentId));
+
+        if(payment.getStatut() != PaymentStatus.EN_ATTENTE){
+            throw new BusinessException("La commande doit etre en statut : EN ATTANTE");
+        }
+
+        payment.setStatut(PaymentStatus.ENCAISSE);
+        paymentRepository.save(payment);
+        return paymentMapper.toResponse(payment);
+    }
 }
