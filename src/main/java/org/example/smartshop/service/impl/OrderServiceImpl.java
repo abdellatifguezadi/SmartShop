@@ -232,10 +232,33 @@ public class OrderServiceImpl implements IOrderService {
         order.setStatut(OrderStatus.CONFIRMED);
         Order confirmedOrder = orderRepository.save(order);
 
+        Client client = order.getClient();
+        client.setTotalOrders(client.getTotalOrders() + 1);
+        client.setTotalSpent(client.getTotalSpent().add(order.getTotalTTC()));
+
+        CustomerTier newTier = calculateCustomerTier(client.getTotalOrders(), client.getTotalSpent());
+        client.setNiveauFidelite(newTier);
+
+        clientRepository.save(client);
+
         return orderMapper.toResponse(confirmedOrder);
     }
 
+    private CustomerTier calculateCustomerTier(Integer totalOrders, BigDecimal totalSpent) {
+        if (totalOrders >= 20 || totalSpent.compareTo(new BigDecimal("15000")) >= 0) {
+            return CustomerTier.PLATINUM;
+        }
 
+        if (totalOrders >= 10 || totalSpent.compareTo(new BigDecimal("5000")) >= 0) {
+            return CustomerTier.GOLD;
+        }
+
+        if (totalOrders >= 3 || totalSpent.compareTo(new BigDecimal("1000")) >= 0) {
+            return CustomerTier.SILVER;
+        }
+
+        return CustomerTier.BASIC;
+    }
 
     private BigDecimal calculateTierDiscount(CustomerTier tier, BigDecimal sousTotal) {
         BigDecimal discountPercentage = BigDecimal.ZERO;
