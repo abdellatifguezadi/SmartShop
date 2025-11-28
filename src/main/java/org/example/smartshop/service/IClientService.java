@@ -5,6 +5,8 @@ import org.example.smartshop.dto.request.ClientUpdateRequest;
 import org.example.smartshop.dto.response.ClientResponse;
 import org.example.smartshop.dto.response.ClientStatisticsResponse;
 
+import java.util.List;
+
 public interface IClientService {
     ClientResponse createClient(ClientRequest request);
     ClientResponse updateClient(Long id, ClientUpdateRequest request);
@@ -12,4 +14,5 @@ public interface IClientService {
     ClientResponse getMyProfile(Long userId);
     ClientStatisticsResponse getMyStatistics(Long userId);
     void deleteClient(Long id);
+    List<ClientResponse> getAllClients();
 }
