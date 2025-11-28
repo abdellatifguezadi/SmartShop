@@ -3,10 +3,12 @@ package org.example.smartshop.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.OrderItemRequest;
 import org.example.smartshop.dto.request.OrderRequest;
+import org.example.smartshop.dto.request.OrderUpdateRequest;
 import org.example.smartshop.dto.response.OrderResponse;
 import org.example.smartshop.entity.*;
 import org.example.smartshop.enums.CustomerTier;
 import org.example.smartshop.enums.OrderStatus;
+import org.example.smartshop.enums.PaymentStatus;
 import org.example.smartshop.exception.BusinessException;
 import org.example.smartshop.exception.ResourceNotFoundException;
 import org.example.smartshop.mapper.OrderMapper;
@@ -175,6 +177,87 @@ public class OrderServiceImpl implements IOrderService {
         }
 
         orderRepository.delete(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse cancelOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + id));
+
+        if (order.getStatut() != OrderStatus.PENDING) {
+            throw new BusinessException("Seules les commandes en attente (PENDING) peuvent etre annulees. Statut actuel: " + order.getStatut());
+        }
+
+        if (order.getPromoCode() != null && Boolean.TRUE.equals(order.getPromoCode().getUsed())) {
+            PromoCode promoCode = order.getPromoCode();
+            promoCode.setUsed(false);
+            promoCodeRepository.save(promoCode);
+        }
+
+        order.setStatut(OrderStatus.CANCELED);
+        Order canceledOrder = orderRepository.save(order);
+
+        return orderMapper.toResponse(canceledOrder);
+    }
+
+
+
+    @Override
+    @Transactional
+    public OrderResponse confirmOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + id));
+
+        if (order.getStatut() != OrderStatus.VALIDATED) {
+            throw new BusinessException("Seules les commandes validées (VALIDATED) peuvent être confirmées. Statut actuel: " + order.getStatut());
+        }
+
+        if (order.getMontantRestant().compareTo(BigDecimal.ZERO) != 0) {
+            throw new BusinessException("La commande ne peut être confirmée que si elle est totalement payée. Montant restant: " + order.getMontantRestant() + " DH");
+        }
+
+        List<Payment> payments = order.getPayments();
+        if (payments == null || payments.isEmpty()) {
+            throw new BusinessException("Aucun paiement trouvé pour cette commande");
+        }
+
+        boolean allPaymentsEncaisse = payments.stream()
+                .allMatch(payment -> payment.getStatut() == PaymentStatus.ENCAISSE);
+
+        if (!allPaymentsEncaisse) {
+            throw new BusinessException("Tous les paiements doivent être encaissés avant de confirmer la commande");
+        }
+
+        order.setStatut(OrderStatus.CONFIRMED);
+        Order confirmedOrder = orderRepository.save(order);
+
+        Client client = order.getClient();
+        client.setTotalOrders(client.getTotalOrders() + 1);
+        client.setTotalSpent(client.getTotalSpent().add(order.getTotalTTC()));
+
+        CustomerTier newTier = calculateCustomerTier(client.getTotalOrders(), client.getTotalSpent());
+        client.setNiveauFidelite(newTier);
+
+        clientRepository.save(client);
+
+        return orderMapper.toResponse(confirmedOrder);
+    }
+
+    private CustomerTier calculateCustomerTier(Integer totalOrders, BigDecimal totalSpent) {
+        if (totalOrders >= 20 || totalSpent.compareTo(new BigDecimal("15000")) >= 0) {
+            return CustomerTier.PLATINUM;
+        }
+
+        if (totalOrders >= 10 || totalSpent.compareTo(new BigDecimal("5000")) >= 0) {
+            return CustomerTier.GOLD;
+        }
+
+        if (totalOrders >= 3 || totalSpent.compareTo(new BigDecimal("1000")) >= 0) {
+            return CustomerTier.SILVER;
+        }
+
+        return CustomerTier.BASIC;
     }
 
     private BigDecimal calculateTierDiscount(CustomerTier tier, BigDecimal sousTotal) {

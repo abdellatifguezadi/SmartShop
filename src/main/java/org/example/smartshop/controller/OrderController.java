@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.OrderRequest;
+import org.example.smartshop.dto.request.OrderUpdateRequest;
 import org.example.smartshop.dto.response.OrderResponse;
 import org.example.smartshop.service.IOrderService;
 import org.example.smartshop.util.SecurityUtils;
@@ -54,5 +55,19 @@ public class OrderController {
         SecurityUtils.requireAdmin(session);
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable Long id, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        OrderResponse response = orderService.cancelOrder(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<OrderResponse> confirmOrder(@PathVariable Long id, HttpSession session) {
+        SecurityUtils.requireAdmin(session);
+        OrderResponse response = orderService.confirmOrder(id);
+        return ResponseEntity.ok(response);
     }
 }

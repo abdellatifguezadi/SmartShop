@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -132,6 +133,13 @@ public class ClientServiceImpl implements IClientService {
             userRepository.delete(user);
         }
 
+    }
+
+    @Override
+    public List<ClientResponse> getAllClients() {
+        return clientRepository.findAll().stream()
+                .map(clientMapper::toResponse)
+                .toList();
     }
 
 

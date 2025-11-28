@@ -9,8 +9,11 @@ import org.example.smartshop.dto.response.ClientResponse;
 import org.example.smartshop.dto.response.ClientStatisticsResponse;
 import org.example.smartshop.service.IClientService;
 import org.example.smartshop.util.SecurityUtils;
+import org.springframework.boot.web.server.servlet.WebListenerRegistry;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -57,4 +60,14 @@ public class ClientController {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<ClientResponse>> getAllClient(HttpSession session){
+        SecurityUtils.requireAdmin(session);
+        List<ClientResponse> clients = clientService.getAllClients();
+        return ResponseEntity.ok(clients);
+    }
+
+
+
 }
