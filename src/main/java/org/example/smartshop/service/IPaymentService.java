@@ -10,4 +10,5 @@ public interface IPaymentService {
     PaymentResponse getPaymentById(Long id);
     List<PaymentResponse> getPaymentsByOrderId(Long orderId);
     PaymentResponse validatePayment(Long paymentId);
+    PaymentResponse rejectedPayment(Long paymentId);
 }
