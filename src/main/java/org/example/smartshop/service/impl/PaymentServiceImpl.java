@@ -3,10 +3,7 @@ package org.example.smartshop.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.smartshop.dto.request.PaymentRequest;
 import org.example.smartshop.dto.response.PaymentResponse;
-import org.example.smartshop.entity.Order;
-import org.example.smartshop.entity.OrderItem;
-import org.example.smartshop.entity.Payment;
-import org.example.smartshop.entity.Product;
+import org.example.smartshop.entity.*;
 import org.example.smartshop.enums.OrderStatus;
 import org.example.smartshop.enums.PaymentMethod;
 import org.example.smartshop.enums.PaymentStatus;
@@ -133,11 +130,19 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
+    public List<PaymentResponse> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream()
+                .map(paymentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public List<PaymentResponse> getPaymentsByOrderId(Long orderId) {
         List<Payment> payments = paymentRepository.findByOrderId(orderId);
         return payments.stream()
                 .map(paymentMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -152,5 +157,40 @@ public class PaymentServiceImpl implements IPaymentService {
         payment.setStatut(PaymentStatus.ENCAISSE);
         paymentRepository.save(payment);
         return paymentMapper.toResponse(payment);
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponse rejectedPayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement non trouve avec l'ID: " + paymentId));
+
+        if (payment.getStatut() != PaymentStatus.EN_ATTENTE) {
+            throw new BusinessException("Le paiement doit etre en statut : EN_ATTENTE");
+        }
+
+        payment.setStatut(PaymentStatus.REJETE);
+        Payment rejectedPayment = paymentRepository.save(payment);
+
+        Order order = payment.getOrder();
+        order.setMontantRestant(order.getMontantRestant().add(payment.getMontant()));
+
+        List<Payment> allPayments = paymentRepository.findByOrderId(order.getId());
+        boolean allPaymentsRejected = allPayments.stream()
+                .allMatch(p -> p.getStatut() == PaymentStatus.REJETE);
+
+        if (allPaymentsRejected) {
+            for (OrderItem item : order.getItems()) {
+                Product product = item.getProduct();
+                product.setStockDisponible(product.getStockDisponible() + item.getQuantite());
+                productRepository.save(product);
+            }
+
+            order.setStatut(OrderStatus.PENDING);
+        }
+
+        orderRepository.save(order);
+
+        return paymentMapper.toResponse(rejectedPayment);
     }
 }
