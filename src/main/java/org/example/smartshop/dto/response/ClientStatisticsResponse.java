@@ -3,6 +3,7 @@ package org.example.smartshop.dto.response;
 import lombok.*;
 import org.example.smartshop.enums.CustomerTier;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -15,5 +16,6 @@ public class ClientStatisticsResponse {
     private Integer nombreCommandes;
     private BigDecimal montantCumule;
     private BigDecimal montantMoyenParCommande;
+    private LocalDateTime datePremiereCommande;
+    private LocalDateTime dateDerniereCommande;
 }
-

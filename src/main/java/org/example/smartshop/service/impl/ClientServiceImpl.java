@@ -6,6 +6,7 @@ import org.example.smartshop.dto.request.ClientUpdateRequest;
 import org.example.smartshop.dto.response.ClientResponse;
 import org.example.smartshop.dto.response.ClientStatisticsResponse;
 import org.example.smartshop.entity.Client;
+import org.example.smartshop.entity.Order;
 import org.example.smartshop.entity.User;
 import org.example.smartshop.enums.UserRole;
 import org.example.smartshop.exception.BusinessException;
@@ -20,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -109,6 +112,21 @@ public class ClientServiceImpl implements IClientService {
                 .divide(new BigDecimal(client.getTotalOrders()), 2, RoundingMode.HALF_UP);
         }
 
+        LocalDateTime datePremiereCommande = null;
+        LocalDateTime dateDerniereCommande = null;
+
+        if (client.getOrders() != null && !client.getOrders().isEmpty()) {
+            datePremiereCommande = client.getOrders().stream()
+                    .map(Order::getDateCreation)
+                    .min(Comparator.naturalOrder())
+                    .orElse(null);
+
+            dateDerniereCommande = client.getOrders().stream()
+                    .map(Order::getDateCreation)
+                    .max(Comparator.naturalOrder())
+                    .orElse(null);
+        }
+
         return ClientStatisticsResponse.builder()
             .nom(client.getNom())
             .email(client.getEmail())
@@ -116,6 +134,8 @@ public class ClientServiceImpl implements IClientService {
             .nombreCommandes(client.getTotalOrders())
             .montantCumule(client.getTotalSpent())
             .montantMoyenParCommande(montantMoyen)
+            .datePremiereCommande(datePremiereCommande)
+            .dateDerniereCommande(dateDerniereCommande)
             .build();
     }
 
