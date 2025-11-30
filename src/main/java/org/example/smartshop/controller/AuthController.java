@@ -32,18 +32,5 @@ public class AuthController {
             .message("Déconnexion réussie")
             .build());
     }
-    
-    @GetMapping("/current")
-    public ResponseEntity<AuthResponse> getCurrentUser(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return ResponseEntity.status(401).build();
-        }
-        return ResponseEntity.ok(AuthResponse.builder()
-            .userId(userId)
-            .username((String) session.getAttribute("username"))
-            .role((UserRole) session.getAttribute("role"))
-            .message("Session active")
-            .build());
-    }
+
 }
