@@ -43,7 +43,7 @@ public class ProductServiceImpl implements IProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Produit non trouve"));
 
-        if (productRepository.existsByNom(request.getNom()) && request.getNom() != null && !request.getNom().equals(product.getNom())){
+        if (productRepository.existsByNom(request.getNom()) && request.getNom() != null && !request.getNom().equalsIgnoreCase(product.getNom())) {
             throw new BusinessException("Un produit avec ce nom existe deja");
         }
 

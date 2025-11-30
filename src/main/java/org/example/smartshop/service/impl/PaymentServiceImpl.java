@@ -37,12 +37,12 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse createPayment(Long orderId, PaymentRequest request) {
+    public PaymentResponse createPayment(PaymentRequest request) {
 
         paymentValidator.validatePayment(request);
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + orderId));
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvee avec l'ID: " + request.getOrderId()));
 
         if (order.getStatut() != OrderStatus.PENDING && order.getStatut() != OrderStatus.VALIDATED) {
             throw new BusinessException("Impossible d'ajouter un paiement. La commande doit etre en statut PENDING ou VALIDATED. Statut actuel: " + order.getStatut());
@@ -57,14 +57,17 @@ public class PaymentServiceImpl implements IPaymentService {
         payment.setOrder(order);
         payment.setDatePaiement(LocalDateTime.now());
 
-        Long count = paymentRepository.countByOrderId(orderId);
+        Long count = paymentRepository.countByOrderId(request.getOrderId());
         payment.setNumeroPaiement(count.intValue() + 1);
 
         payment.setNumeroRecu("REC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
 
         //check si le 1er payment ou non
-        List<Payment> existingPayments = paymentRepository.findByOrderId(orderId);
-        if (existingPayments.isEmpty()) {
+        List<Payment> existingPayments = paymentRepository.findByOrderId(request.getOrderId());
+        List<Payment> NotRejectedPayment = existingPayments.stream()
+                .filter(p -> p.getStatut() != PaymentStatus.REJETE)
+                .toList();
+        if (existingPayments.isEmpty() || NotRejectedPayment.isEmpty()) {
 
             boolean stockSuffisant = verifierStock(order);
 

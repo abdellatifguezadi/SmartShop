@@ -222,7 +222,15 @@ public class OrderServiceImpl implements IOrderService {
             throw new BusinessException("Aucun paiement trouvé pour cette commande");
         }
 
-        boolean allPaymentsEncaisse = payments.stream()
+        List<Payment> activePayments = payments.stream()
+                .filter(payment -> payment.getStatut() != PaymentStatus.REJETE)
+                .toList();
+
+        if (activePayments.isEmpty()) {
+            throw new BusinessException("Aucun paiement valide trouvé pour cette commande");
+        }
+
+        boolean allPaymentsEncaisse = activePayments.stream()
                 .allMatch(payment -> payment.getStatut() == PaymentStatus.ENCAISSE);
 
         if (!allPaymentsEncaisse) {

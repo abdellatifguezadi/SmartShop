@@ -20,12 +20,11 @@ public class PaymentController {
 
     private final IPaymentService paymentService;
 
-    @PostMapping("/order/{orderId}")
+    @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(
-            @PathVariable Long orderId,
             @Valid @RequestBody PaymentRequest request , HttpSession session ) {
         SecurityUtils.requireAdmin(session);
-        PaymentResponse response = paymentService.createPayment(orderId, request);
+        PaymentResponse response = paymentService.createPayment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

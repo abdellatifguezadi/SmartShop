@@ -32,21 +32,21 @@ public class DataSeeder implements CommandLineRunner {
             // Admin user
             User admin = User.builder()
                 .username("admin")
-                .password(passwordEncoder.encode("admin123"))
+                .password(passwordEncoder.encode("pass123"))
                 .role(UserRole.ADMIN)
                 .build();
             userRepository.save(admin);
             
             // Client BASIC
             User clientUser = User.builder()
-                .username("client")
-                .password(passwordEncoder.encode("client123"))
+                .username("basic")
+                .password(passwordEncoder.encode("pass123"))
                 .role(UserRole.CLIENT)
                 .build();
             
             Client client = Client.builder()
-                .nom("Hassan Alami")
-                .email("hassan@test.com")
+                .nom("abdelaziz")
+                .email("abdelaziz@test.com")
                 .niveauFidelite(CustomerTier.BASIC)
                 .totalOrders(0)
                 .totalSpent(BigDecimal.ZERO)
@@ -56,16 +56,16 @@ public class DataSeeder implements CommandLineRunner {
             clientUser.setClient(client);
             userRepository.save(clientUser);
             
-            // Client SILVER avec historique
+            // Client SILVER
             User silverUser = User.builder()
                 .username("silver")
-                .password(passwordEncoder.encode("silver123"))
+                .password(passwordEncoder.encode("pass123"))
                 .role(UserRole.CLIENT)
                 .build();
 
             Client silverClient = Client.builder()
-                .nom("Fatima Zahra")
-                .email("fatima@test.com")
+                .nom("abdellatif")
+                .email("abdellatif@test.com")
                 .niveauFidelite(CustomerTier.SILVER)
                 .totalOrders(3)
                 .totalSpent(new BigDecimal("600.00"))
@@ -75,15 +75,15 @@ public class DataSeeder implements CommandLineRunner {
             silverUser.setClient(silverClient);
             userRepository.save(silverUser);
 
-            // Client GOLD avec historique
+            // Client GOLD
             User goldUser = User.builder()
                 .username("gold")
-                .password(passwordEncoder.encode("gold123"))
+                .password(passwordEncoder.encode("pass123"))
                 .role(UserRole.CLIENT)
                 .build();
 
             Client goldClient = Client.builder()
-                .nom("Ahmed Benani")
+                .nom("Ahmed")
                 .email("ahmed@test.com")
                 .niveauFidelite(CustomerTier.GOLD)
                 .totalOrders(8)
@@ -94,16 +94,16 @@ public class DataSeeder implements CommandLineRunner {
             goldUser.setClient(goldClient);
             userRepository.save(goldUser);
 
-            // Client PLATINUM avec historique
+            // Client PLATINUM
             User platinumUser = User.builder()
                 .username("platinum")
-                .password(passwordEncoder.encode("platinum123"))
+                .password(passwordEncoder.encode("pass123"))
                 .role(UserRole.CLIENT)
                 .build();
 
             Client platinumClient = Client.builder()
-                .nom("Salma Idrissi")
-                .email("salma@test.com")
+                .nom("lahcen")
+                .email("lahcen@test.com")
                 .niveauFidelite(CustomerTier.PLATINUM)
                 .totalOrders(15)
                 .totalSpent(new BigDecimal("18000.00"))
@@ -126,7 +126,7 @@ public class DataSeeder implements CommandLineRunner {
             Product laptop = Product.builder()
                 .nom("Laptop Dell XPS 15")
                 .description("Laptop puissant pour développeurs")
-                .prixUnitaire(new BigDecimal("12000.00"))
+                .prixUnitaire(new BigDecimal("100.00"))
                 .stockDisponible(10)
                 .deleted(false)
                 .build();
@@ -135,7 +135,7 @@ public class DataSeeder implements CommandLineRunner {
             Product smartphone = Product.builder()
                 .nom("iPhone 15 Pro")
                 .description("Dernier smartphone Apple")
-                .prixUnitaire(new BigDecimal("15000.00"))
+                .prixUnitaire(new BigDecimal("150.00"))
                 .stockDisponible(15)
                 .deleted(false)
                 .build();
@@ -144,7 +144,7 @@ public class DataSeeder implements CommandLineRunner {
             Product headphones = Product.builder()
                 .nom("Sony WH-1000XM5")
                 .description("Casque à réduction de bruit")
-                .prixUnitaire(new BigDecimal("3500.00"))
+                .prixUnitaire(new BigDecimal("350.00"))
                 .stockDisponible(25)
                 .deleted(false)
                 .build();
@@ -153,7 +153,7 @@ public class DataSeeder implements CommandLineRunner {
             Product keyboard = Product.builder()
                 .nom("Keychron K8 Pro")
                 .description("Clavier mécanique sans fil")
-                .prixUnitaire(new BigDecimal("1200.00"))
+                .prixUnitaire(new BigDecimal("120.00"))
                 .stockDisponible(30)
                 .deleted(false)
                 .build();
@@ -162,7 +162,7 @@ public class DataSeeder implements CommandLineRunner {
             Product monitor = Product.builder()
                 .nom("LG UltraWide 34\"")
                 .description("Écran ultra-large 34 pouces")
-                .prixUnitaire(new BigDecimal("4500.00"))
+                .prixUnitaire(new BigDecimal("450.00"))
                 .stockDisponible(12)
                 .deleted(false)
                 .build();
@@ -171,7 +171,7 @@ public class DataSeeder implements CommandLineRunner {
             Product mouse = Product.builder()
                 .nom("Logitech MX Master 3S")
                 .description("Souris ergonomique professionnelle")
-                .prixUnitaire(new BigDecimal("800.00"))
+                .prixUnitaire(new BigDecimal("80.00"))
                 .stockDisponible(40)
                 .deleted(false)
                 .build();

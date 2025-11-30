@@ -11,6 +11,9 @@ import java.time.LocalDate;
 @Builder
 public class PaymentRequest {
     
+    @NotNull(message = "L'ID de la commande est obligatoire")
+    private Long orderId;
+
     @NotNull(message = "Le montant est obligatoire")
     @DecimalMin(value = "0.01", message = "Le montant doit être supérieur à 0")
     private BigDecimal montant;
